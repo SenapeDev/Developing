@@ -26,4 +26,7 @@ int main() {
         printf("(parent): child process PID: %d\n", i);
         exit(0);
     }
+
+    return 0;
+
 }
