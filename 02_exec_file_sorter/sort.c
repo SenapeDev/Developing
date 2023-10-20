@@ -1,51 +1,81 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_WORD_LENGTH 100
-
-int compare(const void *a, const void *b) {
-    return strcmp(*(const char **)a, *(const char **)b);
-}
+// struct student with name, surname and position
+struct student {
+    char name[100];
+    char surname[100];
+    int position;
+};
 
 int main(int argc, char *argv[]) {
 
-    char *input_file = argv[0];
-    char *output_file = argv[1];
-
-    FILE *input = fopen(input_file, "r");
-    if (!input) {
-        perror("Error opening input file");
+    // if number of arguments is not 2, exit
+    if (argc != 2) {
+        printf("Usage: ./sort <input_file> <output_file>\n");
         return 1;
     }
 
-    char **words = NULL;
-    int num_words = 0;
+    // name of input and output file
+    char* INPUT = argv[0];
+    char* OUTPUT = argv[1];
 
-    char word[MAX_WORD_LENGTH];
-    while (fscanf(input, "%s", word) == 1) {
-        words = (char **)realloc(words, (num_words + 1) * sizeof(char *));
-        words[num_words] = strdup(word);
-        num_words++;
+    // open file
+    int c;
+    FILE *file;
+    file = fopen(INPUT, "r");
+    
+    // get number of lines in file
+    int lines = 0;
+    while ((c = getc(file)) != EOF) {
+        if (c == '\n') {
+            lines++;
+        }
     }
 
-    fclose(input);
+    // add 1 to lines, because last line doesn't end with '\n'
+    lines++;
 
-    qsort(words, num_words, sizeof(char *), compare);
+    // create array of students
+    struct student students[lines];
 
-    FILE *output = fopen(output_file, "w");
-    if (!output) {
-        perror("Error opening output file");
-        return 1;
+    // rewind file in order to read it again
+    rewind(file);
+
+    // read file and fill array
+    int i = 0;
+
+    // read 'name \t surname'; position auto increment starting from 1
+    while (fscanf(file, "%s\t%s", students[i].name, students[i].surname) != EOF) {
+        students[i].position = i + 1;
+        i++;
+    }
+    
+    // close file after reading
+    fclose(file);
+
+    // sort array of students by their name, using bubble sort
+    for (int i = 0; i <= lines - 1; i++) {
+        for (int j = 0; j <= lines - i - 1; j++) {
+            if (strcmp(students[j].name, students[j + 1].name) > 0) {
+                struct student temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
+            }
+        }
     }
 
-    for (int i = 0; i < num_words; i++) {
-        fprintf(output, "%s\n", words[i]);
-        free(words[i]);
+    // open output file in write mode
+    FILE *output;
+    output = fopen(OUTPUT, "w");
+
+    // write sorted array of students in output file; format 'name \t surname'
+    for (int i = 0; i < lines; i++) {
+        fprintf(output, "%s\t%s\n", students[i].name, students[i].surname);
     }
 
+    // close output file after writing
     fclose(output);
-    free(words);
 
     return 0;
 }
