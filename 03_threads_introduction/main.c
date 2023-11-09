@@ -17,18 +17,20 @@ void *print_char(void *p) {
 
 int main() {
 
-        pthread_t t_ID;
-        int repetitions, character;
+    pthread_t t_ID;
+    int repetitions, character;
 
-        printf("Enter a single character: ");
-        character = getchar();
+    printf("Enter a single character: ");
+    character = getchar();
 
-        printf("How the number of repetition for letter '%c': ", character);
-        scanf("%d", &repetitions);
+    printf("How the number of repetition for letter '%c': ", character);
+    scanf("%d", &repetitions);
 
-        int ARGS[2] = {character, repetitions};
+    int ARGS[2] = {character, repetitions};
 
-        pthread_create(&t_ID, NULL, &print_char, &ARGS);
-        pthread_join(t_ID, NULL);
+    pthread_create(&t_ID, NULL, &print_char, &ARGS);
+    pthread_join(t_ID, NULL);
+
+    return 0;
 
 }
