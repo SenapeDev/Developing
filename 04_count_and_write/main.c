@@ -6,24 +6,25 @@
 #define MAX_LEN 100
 
 void *count_char(void *p) {
-    // Apri il file
+    
+    // ppen the file
     FILE *file = fopen((char *)p, "r");
 
-    // Verifica se il file esiste
+    // verify if file exists
     if (file == NULL) {
-        printf("Errore durante l'apertura del file.\n");
+        printf("Error during file opening.\n");
         return NULL;
     }
 
-    // Alloca memoria per count
+    // allocate memory for the result
     int *count = malloc(sizeof(int));
     if (count == NULL) {
-        printf("Errore durante l'allocazione della memoria.\n");
+        printf("Error during memory allocation.\n");
         fclose(file);
         return NULL;
     }
 
-    // Conta i caratteri
+    // count the number of letters
     int letter = 0;
     *count = 0;
 
@@ -33,40 +34,41 @@ void *count_char(void *p) {
 
     fclose(file);
 
-    // Restituisci count
+    // return the result
     return count;
 }
 
 int main() {
-    // Create a thread ID
+    
+    // create a thread ID
     pthread_t t_ID;
 
-    // Create a pointer to the result
+    // create a pointer to the result
     void *count_result;
 
-    // Allocate memory for the file name
+    // allocate memory for the file name
     char *file_name = malloc(MAX_LEN * sizeof(char));
 
-    // Verify if the memory has been allocated
+    // verify if the memory has been allocated
     if (file_name == NULL) {
         fprintf(stderr, "Error during memory allocation.");
         exit(EXIT_FAILURE);
     }
 
-    // Read file name
+    // read file name
     printf("Inserisci il nome del file: ");
     fgets(file_name, MAX_LEN, stdin);
 
     // remove the newline character
     file_name[strcspn(file_name, "\n")] = '\0';
 
-    // Create the thread and pass the file name as argument
+    // create the thread and pass the file name as argument
     pthread_create(&t_ID, NULL, &count_char, (void *)file_name);
 
-    // Wait for the thread to finish
+    // wait for the thread to finish
     pthread_join(t_ID, &count_result);
 
-    // Print the result
+    // print the result
     if (count_result != NULL) {
         printf("Numero di lettere: %d\n", *(int *)count_result);
 
